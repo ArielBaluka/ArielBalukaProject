@@ -11,8 +11,9 @@ namespace ViewModel
     {
         protected override BaseEntity NewEntity()
         {
-            return new User();
+            return new User() as BaseEntity;
         }
+
         protected override BaseEntity CreateModel(BaseEntity entity)
         {
             User user = entity as User;
@@ -24,9 +25,32 @@ namespace ViewModel
             user.Gender = reader["gender"].Equals(true); // true -> male
             user.BIRTHDATE = DateTime.Parse(reader["birthDate"].ToString());
             user.EMAIL = reader["Email"].ToString();
+            user.ISADMIN = reader["IsAdmin"].Equals(true);
+
+            int groupId = int.Parse(reader["FavoriteGroupID"].ToString());
+
+            GroupDB groupDB = new GroupDB();
+            user.FAVORITEGROUP = groupDB.SelectByID(groupId);
 
             return user;
         }
+
+        protected override void LoadParameters(BaseEntity entity)
+        {
+            User user = entity as User;
+            command.Parameters.Clear();
+            command.Parameters.AddWithValue("@id", user.ID);
+            command.Parameters.AddWithValue("@firstname", user.FirstName);
+            command.Parameters.AddWithValue("@lastname", user.LastName);
+            command.Parameters.AddWithValue("@userName", user.UserName);
+            command.Parameters.AddWithValue("@Password", user.PassWord);
+            command.Parameters.AddWithValue("@gender", user.Gender);
+            command.Parameters.AddWithValue("@birthDate", user.BIRTHDATE);
+            command.Parameters.AddWithValue("@Email", user.EMAIL);
+            command.Parameters.AddWithValue("@IsAdmin", user.ISADMIN);
+            command.Parameters.AddWithValue("@FavoriteGroup", user.FAVORITEGROUP.ID);
+        }
+
 
         //שאילתה המחזירה את כלל המשתמשים
         public UserList SelectAll()
@@ -48,15 +72,31 @@ namespace ViewModel
             return null;
         }
 
-        public bool Login(User user)
+
+
+        public int Insert(User user)
         {
-            command.CommandText = "SELECT * FROM tblUser Where userName ='"+ user.UserName + "';";
-            UserList users = new UserList(ExecuteCommand());
-            if(users.Count() > 0 && users[0].PassWord.Equals(user.PassWord))
-            {
-                return true;
-            }
-            return false;
+            command.CommandText = "INSERT INTO TblUser " +
+                "(firstname, lastname, userName, Password, gender, birthDate, " +
+                "Email, IsAdmin, FavoriteGroup) VALUES (@firstname, @lastname, @userName, " +
+                "@Password, @gender, @birthDate, @Email, @isAdmin, @FavoriteGroup)";
+            LoadParameters(user);
+            return ExecuteCRUD();
         }
+        public int Update(User user)
+        {
+            command.CommandText = "UPDATE TblUser SET username = @username firstname = @firstname, lastname = @lastname, " +
+                "userName = @userName, Password = @Password, gender = @gender, birthDate = @birthDate, Email = @Email, " +
+                "isAdmin = @isAdmin, FavoriteGroup = @FavoriteGroup WHERE id = @id";
+            LoadParameters(user);
+            return ExecuteCRUD();
+        }
+        public int Delete(User user)
+        {
+            command.CommandText = "DELETE FROM TblUser WHERE ID =@id";
+            LoadParameters(user);
+            return ExecuteCRUD();
+        }
+
     }
 }

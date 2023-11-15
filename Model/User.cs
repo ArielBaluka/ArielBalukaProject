@@ -15,6 +15,11 @@ namespace Model
         protected DateTime birthDate;
         protected bool gender;
         protected string Email;
+        protected bool isAdmin;
+        protected Group favoriteGroup;
+
+        protected GuessList guesses;
+
         public string FirstName { get { return this.firstname; } set { this.firstname = value; } }
         public string LastName { get { return this.lastname; } set { this.lastname = value; } }
         public string UserName { get { return this.userName; } set { this.userName = value; } }
@@ -22,7 +27,9 @@ namespace Model
         public DateTime BIRTHDATE { get { return this.birthDate; } set { this.birthDate = value; } }
         public bool Gender { get { return this.gender; } set { this.gender = value; } }
         public string EMAIL { get { return this.Email; } set { this.Email = value; } }
-
+        public bool ISADMIN { get { return this.isAdmin; } set { this.isAdmin = value; } }
+        public Group FAVORITEGROUP { get { return this.favoriteGroup; } set { this.favoriteGroup = value; } }
+        public GuessList Guesses { get { return this.guesses; } set { this.guesses = value; } }
     }
     public class UserList : List<User>
     {
