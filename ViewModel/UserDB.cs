@@ -98,5 +98,15 @@ namespace ViewModel
             return ExecuteCRUD();
         }
 
+        public User Login(User user)
+        {
+            command.CommandText = $"SELECT * FROM TblUsers WHERE (UserName = '{user.UserName}') " +
+                $"AND ([Password] = '{user.PassWord}')";
+            UserList list = new UserList(base.ExecuteCommand());
+            if (list.Count == 1)
+                return list[0];
+            return null;
+        }
+
     }
 }

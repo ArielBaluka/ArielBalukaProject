@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ViewModel
 {
-    internal class GroupDB: BaseDB
+    public class GroupDB: BaseDB
     {
         protected override BaseEntity NewEntity()
         {
@@ -60,14 +60,14 @@ namespace ViewModel
             LoadParameters(group);
             return ExecuteCRUD();
         }
-        public int Update(Game game)
+        public int Update(Group game)
         {
             command.CommandText = "UPDATE TblGroup SET GroupName = @GroupName, Points = @Points, " +
                 "GroupShortcut = @GroupShortcut WHERE id = @id";
             LoadParameters(game);
             return ExecuteCRUD();
         }
-        public int Delete(Game game)
+        public int Delete(Group game)
         {
             command.CommandText = "DELETE FROM TblGroup WHERE ID = @id";
             LoadParameters(game);
