@@ -16,6 +16,9 @@ namespace ViewModel
         protected override BaseEntity CreateModel(BaseEntity entity)
         {
             Game game = entity as Game;
+
+            game.Date = DateTime.Parse(reader["GameDate"].ToString());
+
             game.ID = int.Parse(reader["GameID"].ToString());
             game.HOMESCORE = int.Parse(reader["HTeamScore"].ToString());
             game.AWAYSCORE = int.Parse(reader["ATeamScore"].ToString());
@@ -33,12 +36,12 @@ namespace ViewModel
         {
             Game game = entity as Game;
             command.Parameters.Clear();
-            command.Parameters.AddWithValue("@GameID", game.ID);
             command.Parameters.AddWithValue("@HomeTeam", game.HOMETEAM.ID);
             command.Parameters.AddWithValue("@AwayTeam", game.AWAYTEAM.ID);
             command.Parameters.AddWithValue("@HTeamScore", game.HOMESCORE);
             command.Parameters.AddWithValue("@ATeamScore", game.AWAYSCORE);
-            command.Parameters.AddWithValue("@GameDate", game.Date);
+            command.Parameters.AddWithValue("@GameDate", game.Date.ToShortDateString());
+            command.Parameters.AddWithValue("@GameID", game.ID);
         }
 
         //שאילתה המחזירה את כלל המשחקים
@@ -82,6 +85,15 @@ namespace ViewModel
             command.CommandText = "DELETE FROM TblUser WHERE ID = @id";
             LoadParameters(game);
             return ExecuteCRUD();
+        }
+
+        public bool isExist(Game game)
+        {
+            command.CommandText = $"SELECT * FROM tblGames WHERE GameDate = #{game.Date.ToShortDateString()}# " +
+                $"AND HomeTeam = {game.HOMETEAM.ID} AND AwayTeam = {game.AWAYTEAM.ID}";
+
+            GameList games = new GameList(ExecuteCommand());
+            return games.Count() > 0;
         }
 
     }

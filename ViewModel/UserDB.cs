@@ -39,16 +39,16 @@ namespace ViewModel
         {
             User user = entity as User;
             command.Parameters.Clear();
-            command.Parameters.AddWithValue("@id", user.ID);
             command.Parameters.AddWithValue("@firstname", user.FirstName);
             command.Parameters.AddWithValue("@lastname", user.LastName);
             command.Parameters.AddWithValue("@userName", user.UserName);
             command.Parameters.AddWithValue("@Password", user.PassWord);
             command.Parameters.AddWithValue("@gender", user.Gender);
-            command.Parameters.AddWithValue("@birthDate", user.BIRTHDATE);
+            command.Parameters.AddWithValue("@birthDate", user.BIRTHDATE.ToShortDateString());
             command.Parameters.AddWithValue("@Email", user.EMAIL);
             command.Parameters.AddWithValue("@IsAdmin", user.ISADMIN);
-            command.Parameters.AddWithValue("@FavoriteGroup", user.FAVORITEGROUP.ID);
+            command.Parameters.AddWithValue("@FavoriteGroupID", user.FAVORITEGROUP.ID);
+            command.Parameters.AddWithValue("@id", user.ID);
         }
 
 
@@ -77,9 +77,9 @@ namespace ViewModel
         public int Insert(User user)
         {
             command.CommandText = "INSERT INTO TblUser " +
-                "(firstname, lastname, userName, Password, gender, birthDate, " +
-                "Email, IsAdmin, FavoriteGroup) VALUES (@firstname, @lastname, @userName, " +
-                "@Password, @gender, @birthDate, @Email, @isAdmin, @FavoriteGroup)";
+                "(firstname, lastname, userName, [Password], gender, birthDate, " +
+                "Email, IsAdmin, FavoriteGroupID) VALUES (@firstname, @lastname, @userName, " +
+                "@Password, @gender, @birthDate, @Email, @isAdmin, @FavoriteGroupID)";
             LoadParameters(user);
             return ExecuteCRUD();
         }
@@ -100,7 +100,7 @@ namespace ViewModel
 
         public User Login(User user)
         {
-            command.CommandText = $"SELECT * FROM TblUsers WHERE (UserName = '{user.UserName}') " +
+            command.CommandText = $"SELECT * FROM TblUser WHERE (UserName = '{user.UserName}') " +
                 $"AND ([Password] = '{user.PassWord}')";
             UserList list = new UserList(base.ExecuteCommand());
             if (list.Count == 1)

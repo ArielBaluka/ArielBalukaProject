@@ -1,4 +1,5 @@
-﻿using ServiceModel;
+﻿using Model;
+using ServiceModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,8 +26,11 @@ namespace WpfHost
         public MainWindow()
         {
             InitializeComponent();
+            ServiceBase serviceBase = new ServiceBase();
+            serviceBase.InsertNewGames();
             ServiceHost service = new ServiceHost(typeof(ServiceBase));
             service.Open();
+            
         }
     }
 }

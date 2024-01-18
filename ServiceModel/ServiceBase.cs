@@ -155,7 +155,31 @@ namespace ServiceModel
         {
             UserDB db = new UserDB();
             User LoggedUser = db.Login(user);
-            return LoggedUser;
+            if(LoggedUser != null && LoggedUser.UserName.Equals(user.UserName) 
+                && LoggedUser.PassWord.Equals(user.PassWord))
+                return LoggedUser;
+            return null;
         }
+
+        public GameList GetGameResults()
+        {
+            GameList list = PremierLeagueData.ParseRSSEPL();
+            return list;
+        }
+
+
+        public void InsertNewGames()
+        {
+            GameList list = GetGameResults();
+            GameDB db = new GameDB();
+            foreach(Game game in list)
+            {
+                if(!db.isExist(game))
+                {
+                    db.Insert(game);
+                }
+            }
+        }
+
     }
 }

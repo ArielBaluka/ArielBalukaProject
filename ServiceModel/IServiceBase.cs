@@ -43,5 +43,7 @@ namespace ServiceModel
 
         //others
         [OperationContract] User Login(User user);
+        [OperationContract] GameList GetGameResults();
+        [OperationContract] void InsertNewGames();
     }
 }
