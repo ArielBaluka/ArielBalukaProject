@@ -167,10 +167,15 @@ namespace ServiceModel
             return list;
         }
 
+        public GameList GetNextmonthGames()
+        {
+            GameList list = PremierLeagueData.ReadGameSchedule();
+            return list;
+        }
 
         public void InsertNewGames()
         {
-            GameList list = GetGameResults();
+            GameList list = GetNextmonthGames();
             GameDB db = new GameDB();
             foreach(Game game in list)
             {
@@ -180,6 +185,24 @@ namespace ServiceModel
                 }
             }
         }
+
+        public void LoadResults()
+        {
+            GameList list = GetGameResults();
+            GameDB db = new GameDB();
+            foreach (Game game in list)
+            {
+                if (db.isExist(game))
+                {
+                    if(!db.IsUpdated(game))
+                    {
+                        db.Update(game);
+                    }
+                }
+            }
+        }
+
+
 
     }
 }

@@ -96,5 +96,14 @@ namespace ViewModel
             return games.Count() > 0;
         }
 
+        public bool IsUpdated(Game game)
+        {
+            command.CommandText = $"SELECT * FROM tblGames WHERE GameDate = #{game.Date.ToShortDateString()}# " +
+                $"AND HomeTeam = {game.HOMETEAM.ID} AND AwayTeam = {game.AWAYTEAM.ID}";
+
+            GameList games = new GameList(ExecuteCommand());
+            return games[0].AWAYSCORE == -1; //i insert games to sql with -1 scores
+        }
+
     }
 }
