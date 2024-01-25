@@ -102,10 +102,11 @@ namespace ServiceModel
                 var sortedEvents = calendar.Events.OrderBy(e => e.Start);
                 // Get the current time
                 DateTime currentLocalTime = DateTime.UtcNow;
-                DateTime nextMonth = currentLocalTime.AddMonths(1);
+                //DateTime nextMonth = currentLocalTime.AddMonths(1);
+                DateTime nextTwoWeeks = currentLocalTime.AddDays(14);
                 foreach (var calendarEvent in sortedEvents)
                 {
-                    if (currentLocalTime < calendarEvent.Start.AsSystemLocal && nextMonth > calendarEvent.Start.AsSystemLocal)
+                    if (currentLocalTime < calendarEvent.Start.AsSystemLocal && nextTwoWeeks > calendarEvent.Start.AsSystemLocal)
                     {// adding only relevant games - in the future and in less than a month
                         games.Add(GenerateGame(calendarEvent, groups));
                     }

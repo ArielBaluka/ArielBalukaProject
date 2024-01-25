@@ -40,7 +40,7 @@ namespace ViewModel
             command.Parameters.Clear();
             command.Parameters.AddWithValue("@UserID", guess.USER.ID);
             command.Parameters.AddWithValue("@GameID", guess.GAME.ID);
-            command.Parameters.AddWithValue("@TeamGuessed", guess.TEAMGUESSED);
+            command.Parameters.AddWithValue("@TeamGuessed",guess.TEAMGUESSED==null?1: guess.TEAMGUESSED.ID);
             command.Parameters.AddWithValue("@IsDraw", guess.ISDRAW);
         }
 
@@ -69,7 +69,7 @@ namespace ViewModel
         }
         public int Delete(Guess guess)
         {
-            command.CommandText = "DELETE FROM TblGuess WHERE ID = @id";
+            command.CommandText = "DELETE FROM TblGuess WHERE UserID = @UserID AND GameID = @GameID";
             LoadParameters(guess);
             return ExecuteCRUD();
         }
