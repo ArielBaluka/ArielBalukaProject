@@ -210,15 +210,10 @@ namespace ServiceModel
             GuessDB guessDB = new GuessDB();
             GameDB gameDB = new GameDB();
             GuessList user_guesses = guessDB.GetUserGuesses(user);
-            GameList games = gameDB.SelectAll();
-            Game game = null;
             int score = 0;
-            // the first id of a game in my gameDB is 3
             foreach (Guess guess in user_guesses)
             {
-                game = games[guess.GAME.ID - 3];
-
-                if (CheckGuess(guess, game))
+                if (guess.ISCORRECT)
                 {
                     score += 25;
                 }
@@ -228,7 +223,7 @@ namespace ServiceModel
 
         private bool CheckGuess(Guess guess, Game game)
         {
-            if (game.HOMESCORE == game.AWAYSCORE && guess.ISDRAW)
+            if (game.HOMESCORE != -1 && game.HOMESCORE == game.AWAYSCORE && guess.ISDRAW)
                 return true;
 
             if(game.HOMESCORE > game.AWAYSCORE && guess.TEAMGUESSED.ID == game.HOMETEAM.ID)
@@ -239,5 +234,24 @@ namespace ServiceModel
 
             return false;
         }
+
+        public void UpdateAllGuesses()
+        {
+            GuessList guesses = GetAllGuesses();
+            GameList games = GetAllGames();
+            Game game = null;
+            // the first id of a game in my gameDB is 3
+            foreach (Guess guess in guesses)
+            {
+                game = games[guess.GAME.ID - 3];
+
+                if (CheckGuess(guess, game))
+                {
+                    guess.ISCORRECT = true;
+                    UpdateGuess(guess);
+                }
+            }
+        }
+
     }
 }

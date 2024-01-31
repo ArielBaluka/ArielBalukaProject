@@ -31,6 +31,7 @@ namespace ServiceModel
         [OperationContract] int UpdateGame(Game game);
         [OperationContract] int UpdateGroup(Group group);
         [OperationContract] int UpdateGuess(Guess guess);
+        [OperationContract] void UpdateAllGuesses();
         [OperationContract] int UpdatePlayer(Player player);
 
 

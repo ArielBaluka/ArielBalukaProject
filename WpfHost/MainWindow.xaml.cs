@@ -29,6 +29,7 @@ namespace WpfHost
             ServiceBase serviceBase = new ServiceBase();
             serviceBase.InsertNewGames();
             serviceBase.LoadResults();
+            serviceBase.UpdateAllGuesses();
             ServiceHost service = new ServiceHost(typeof(ServiceBase));
             service.Open();
             

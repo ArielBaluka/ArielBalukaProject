@@ -18,6 +18,7 @@ namespace ViewModel
         {
             Guess guess = entity as Guess;
             guess.ISDRAW = bool.Parse(reader["IsDraw"].ToString());
+            guess.ISCORRECT = bool.Parse(reader["IsCorrect"].ToString());
 
             int groupId = int.Parse(reader["TeamGuessed"].ToString());
             GroupDB groupDB = new GroupDB();
@@ -40,8 +41,13 @@ namespace ViewModel
             command.Parameters.Clear();
             command.Parameters.AddWithValue("@UserID", guess.USER.ID);
             command.Parameters.AddWithValue("@GameID", guess.GAME.ID);
-            command.Parameters.AddWithValue("@TeamGuessed",guess.TEAMGUESSED==null?1: guess.TEAMGUESSED.ID);
+            //command.Parameters.AddWithValue("@TeamGuessed",guess.TEAMGUESSED==null?1: guess.TEAMGUESSED.ID);
+            if(guess.ISDRAW)
+                command.Parameters.AddWithValue("@TeamGuessed", 1);
+            else
+                command.Parameters.AddWithValue("@TeamGuessed", guess.TEAMGUESSED.ID);
             command.Parameters.AddWithValue("@IsDraw", guess.ISDRAW);
+            command.Parameters.AddWithValue("@IsCorrect", guess.ISCORRECT);
         }
 
         //שאילתה המחזירה את כלל הניחושים
@@ -54,22 +60,22 @@ namespace ViewModel
 
         public int Insert(Guess guess)
         {
-            command.CommandText = "INSERT INTO TblGuess " +
-                "(UserID, GameID, TeamGuessed, isDraw)" +
-                "VALUES (@UserID, @GameID, @TeamGuessed, @isDraw)";
+            command.CommandText = "INSERT INTO tblGuess " +
+                "(UserID, GameID, TeamGuessed, isDraw, IsCorrect)" +
+                "VALUES (@UserID, @GameID, @TeamGuessed, @isDraw, @IsCorrect)";
             LoadParameters(guess);
             return ExecuteCRUD();
         }
         public int Update(Guess guess)
         {
-            command.CommandText = "UPDATE TblGuess SET UserID = @UserID, GameID = @GameID, " +
-                "TeamGuessed = @TeamGuessed, isDraw = @isDraw WHERE id = @id";
+            command.CommandText = "UPDATE tblGuess SET UserID = @UserID, GameID = @GameID, " +
+                "TeamGuessed = @TeamGuessed, isDraw = @isDraw, IsCorrect = @IsCorrect WHERE GameID = @GameID AND UserID = @UserID";
             LoadParameters(guess);
             return ExecuteCRUD();
         }
         public int Delete(Guess guess)
         {
-            command.CommandText = "DELETE FROM TblGuess WHERE UserID = @UserID AND GameID = @GameID";
+            command.CommandText = "DELETE FROM tblGuess WHERE UserID = @UserID AND GameID = @GameID";
             LoadParameters(guess);
             return ExecuteCRUD();
         }
