@@ -46,5 +46,7 @@ namespace ServiceModel
         [OperationContract] GameList GetGameResults();
         [OperationContract] void InsertNewGames();
         [OperationContract] void LoadResults();
+        [OperationContract] int CalculateUserPoint(User user);
+
     }
 }

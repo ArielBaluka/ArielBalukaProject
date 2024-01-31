@@ -74,5 +74,12 @@ namespace ViewModel
             return ExecuteCRUD();
         }
 
+        public GuessList GetUserGuesses(User user)
+        {
+            command.CommandText = $"SELECT * FROM tblGuess WHERE UserID = {user.ID}";
+            GuessList guesses = new GuessList(ExecuteCommand());
+            return guesses;
+        }
+
     }
 }

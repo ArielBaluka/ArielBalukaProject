@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.ServiceModel.Security.Tokens;
 using System.Text;
 using System.Threading.Tasks;
 using ViewModel;
@@ -190,19 +191,53 @@ namespace ServiceModel
         {
             GameList list = GetGameResults();
             GameDB db = new GameDB();
-            foreach (Game game in list)
+
+            GameList games =new GameList(db.SelectAll().FindAll(g=>g.AWAYSCORE==-1));
+            foreach (Game game in games)
             {
-                if (db.isExist(game))
+                Game current = list.Find(g => g.Date == game.Date && g.HOMETEAM.ID== game.HOMETEAM.ID && g.AWAYTEAM.ID == game.AWAYTEAM.ID);
+                if (current != null)
                 {
-                    if(!db.IsUpdated(game))
-                    {
-                        db.Update(game);
-                    }
+                    game.AWAYSCORE = current.AWAYSCORE;
+                    game.HOMESCORE = current.HOMESCORE;
+                    db.Update(game);
                 }
             }
         }
 
+        public int CalculateUserPoint(User user)
+        {
+            GuessDB guessDB = new GuessDB();
+            GameDB gameDB = new GameDB();
+            GuessList user_guesses = guessDB.GetUserGuesses(user);
+            GameList games = gameDB.SelectAll();
+            Game game = null;
+            int score = 0;
+            // the first id of a game in my gameDB is 3
+            foreach (Guess guess in user_guesses)
+            {
+                game = games[guess.GAME.ID - 3];
 
+                if (CheckGuess(guess, game))
+                {
+                    score += 25;
+                }
+            }
+            return score;
+        }
 
+        private bool CheckGuess(Guess guess, Game game)
+        {
+            if (game.HOMESCORE == game.AWAYSCORE && guess.ISDRAW)
+                return true;
+
+            if(game.HOMESCORE > game.AWAYSCORE && guess.TEAMGUESSED.ID == game.HOMETEAM.ID)
+                return true;
+
+            if (game.AWAYSCORE > game.HOMESCORE && guess.TEAMGUESSED.ID == game.AWAYTEAM.ID)
+                return true;
+
+            return false;
+        }
     }
 }

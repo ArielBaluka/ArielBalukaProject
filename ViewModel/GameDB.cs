@@ -55,7 +55,7 @@ namespace ViewModel
         //שאילתה המחזירה משחק לפי מאפיין (id)
         public Game SelectByID(int id)
         {
-            command.CommandText = "SELECT * FROM tblGames WHERE id=" + id.ToString() + ";";
+            command.CommandText = $"SELECT * FROM tblGames WHERE GameID = {id}";
             GameList games = new GameList(ExecuteCommand());
             if (games.Count() > 0)
             {
@@ -76,7 +76,7 @@ namespace ViewModel
         public int Update(Game game)
         {
             command.CommandText = "UPDATE TblGames SET HomeTeam = @HomeTeam, AwayTeam = @AwayTeam, " +
-                "HteamScore = @HteamScore, ATeamScore = @ATeamScore, GameDate = @GameDate WHERE id = @id";
+                "HteamScore = @HteamScore, ATeamScore = @ATeamScore, GameDate = @GameDate WHERE GameID = @id";
             LoadParameters(game);
             return ExecuteCRUD();
         }
@@ -102,7 +102,7 @@ namespace ViewModel
                 $"AND HomeTeam = {game.HOMETEAM.ID} AND AwayTeam = {game.AWAYTEAM.ID}";
 
             GameList games = new GameList(ExecuteCommand());
-            return games[0].AWAYSCORE == -1; //i insert games to sql with -1 scores
+            return games[0].AWAYSCORE != -1; //i insert games to sql with -1 scores
         }
 
     }
