@@ -49,5 +49,7 @@ namespace ServiceModel
         [OperationContract] void LoadResults();
         [OperationContract] int CalculateUserPoint(User user);
 
+        [OperationContract] string GetGroupData(Group group);
+
     }
 }

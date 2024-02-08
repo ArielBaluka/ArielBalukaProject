@@ -11,6 +11,44 @@ namespace ServiceModel
 {
     public class ServiceBase : IServiceBase
     {
+        public static Dictionary<string, List<string>> groupsInfo = new Dictionary<string, List<string>>();
+
+        static ServiceBase()
+        {
+            groupsInfo = PremierLeagueData.AdjustDict();
+        }
+
+        public string GetGroupData(Group group)
+        {
+            List<string> data = groupsInfo[group.GroupName];
+            string info = "";
+            foreach(string content in data)
+            {
+                info += content + "\n";
+            }
+
+            int count = 0;
+            string toAdd = "";
+            string result = "";
+            foreach(string st in info.Split('\n'))
+            {
+                foreach(string s in st.Split(' '))
+                {
+                    toAdd = s + " ";
+                    if (count == 15)
+                    {
+                        toAdd += "\n";
+                        count = 0;
+                    }
+                    count++;
+                    result += toAdd;
+                }
+                if (result[result.Length-1] != '\n')
+                    result += "\n";
+            }
+            return result;
+        }
+
         public GameList GetAllGames()
         {
             GameDB db = new GameDB();

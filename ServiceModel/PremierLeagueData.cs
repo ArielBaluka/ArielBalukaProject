@@ -14,6 +14,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using Group = Model.Group;
+using System.Collections.Generic;
 
 namespace ServiceModel
 {
@@ -146,7 +147,117 @@ namespace ServiceModel
             }
         }
 
-        public static Group GetGroup(string team,GroupList groups)
+
+        public static Dictionary<string, List<string>> GenerateGroupsNews()
+        {
+            string xmlPath = @"https://www.foxsports.com.au/content-feeds/premier-league/";
+            List<string> list = new List<string>();
+            List<string> liverpool = new List<string>();
+
+            Dictionary<string, List<string>> groupsInfo = new Dictionary<string, List<string>>();
+
+            initDict(groupsInfo);
+
+            try
+            {
+                XmlTextReader reader = new XmlTextReader(xmlPath);
+                reader.WhitespaceHandling = WhitespaceHandling.None;
+                string desc = "";
+                while (reader.Read())
+                {
+                    if (reader.NodeType == XmlNodeType.Element)
+                    {
+
+                        switch (reader.Name)
+                        {
+                            case "item":
+                                desc = "";
+                                break;
+                            case "title":
+                                reader.ReadString();
+                                break;
+                            case "description":
+                                desc = reader.ReadString();
+                                desc = StripHtmlTags(desc);
+                                break;
+                            case "link":
+                                reader.ReadString();
+                                break;
+                            case "guid":
+                                reader.ReadString();
+                                break;
+                            case "pubDate":
+                                string date = DateTime.Parse(reader.ReadString()).ToString("dd/MM/yy") + ": ";
+                                AddInfoGroup(date + desc, groupsInfo);
+                                break;
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+            return groupsInfo;
+        }
+
+
+        public static Dictionary<string, List<string>> AdjustDict()
+        {
+            Dictionary<string, List<string>> GroupInfo = GenerateGroupsNews();
+            Dictionary<string, List<string>> dict = new Dictionary<string, List<string>>();
+            GameList list = new GameList();
+            GroupDB groupDB = new GroupDB();
+            GroupList groups = groupDB.SelectAll();
+            foreach (string group in GroupInfo.Keys)
+            {
+                dict[GetGroup(group, groups).GroupName] = GroupInfo[group];
+            }
+            return dict;
+        }
+
+
+        static string StripHtmlTags(string input)
+        {
+            return System.Text.RegularExpressions.Regex.Replace(input, "<.*?>", String.Empty);
+        }
+
+        static void AddInfoGroup(string drscription, Dictionary<string, List<string>> groupDict)
+        {
+            foreach (string key in groupDict.Keys)
+            {
+                if (drscription.ToUpper().IndexOf(key.ToUpper()) != -1)
+                {
+                    groupDict[key].Add(drscription);
+                }
+            }
+        }
+
+        static void initDict(Dictionary<string, List<string>> groupsInfo)
+        {
+            groupsInfo["Arsenal"] = new List<string>();//
+            groupsInfo["Aston Villa"] = new List<string>();//
+            groupsInfo["Bournemouth"] = new List<string>();//
+            groupsInfo["Brentford"] = new List<string>();//
+            groupsInfo["Brighton"] = new List<string>();//
+            groupsInfo["Burnley"] = new List<string>();//
+            groupsInfo["Chelsea"] = new List<string>();//
+            groupsInfo["Crystal Palace"] = new List<string>();//
+            groupsInfo["Everton"] = new List<string>();//
+            groupsInfo["Fulham"] = new List<string>();//
+            groupsInfo["Liverpool"] = new List<string>();//
+            groupsInfo["Luton"] = new List<string>();//
+            groupsInfo["Manchester City"] = new List<string>();//
+            groupsInfo["Manchester United"] = new List<string>();//
+            groupsInfo["Newcastle"] = new List<string>();//
+            groupsInfo["Nottingham"] = new List<string>();//
+            groupsInfo["Sheffield United"] = new List<string>();//
+            groupsInfo["Tottenham"] = new List<string>();//
+            groupsInfo["West Ham"] = new List<string>();//
+            groupsInfo["Wolves"] = new List<string>();//
+        }
+
+        public static Group GetGroup(string team, GroupList groups)
         {
             team = team == "Brighton & Hove Albion" ? "Brighton" : team;
             team = team == "Man United" ? "Manchester United" : team;
@@ -155,10 +266,14 @@ namespace ServiceModel
             team = team == "Newcastle" ? "Newcastle United" : team;
             team = team == "Tottenham" ? "Tottenham Hotspur" : team;
             team = team == "Wolves" ? "Wolverhampton Wanderers" : team;
-            Group group= groups.Find(g => g.GroupName == team);
-            if (group == null) 
+            team = team == "Nottingham" ? "Nottingham Forest" : team;
+            team = team == "Luton" ? "Luton Town" : team;
+            team = team == "Luton" ? "Luton Town" : team;
+            Group group = groups.Find(g => g.GroupName == team);
+            if (group == null)
                 group = null;
             return group;
         }
-    }
+    }    
 }
+
