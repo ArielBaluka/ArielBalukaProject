@@ -27,11 +27,14 @@ namespace WpfHost
         {
             InitializeComponent();
             ServiceBase serviceBase = new ServiceBase();
-            serviceBase.InsertNewGames();
+            NewsService NewsService = new NewsService();
+            serviceBase.InsertNewGames(14);
             serviceBase.LoadResults();
             serviceBase.UpdateAllGuesses();
             ServiceHost service = new ServiceHost(typeof(ServiceBase));
+            ServiceHost service2 = new ServiceHost(typeof(NewsService));
             service.Open();
+            service2.Open();
             
         }
     }

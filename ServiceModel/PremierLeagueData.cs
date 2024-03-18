@@ -46,6 +46,10 @@ namespace ServiceModel
                                 break;
                             case "hteam":
                                 game.HOMETEAM = GetGroup(reader.ReadString(),groups);
+                                if(game.HOMETEAM.GroupName == "Arsenal")
+                                {
+                                    continue;
+                                }
                                 break;
                             case "hscore":
                                 game.HOMESCORE = int.Parse(reader.ReadString());
@@ -69,8 +73,6 @@ namespace ServiceModel
             {
                 throw e;
             }
-            foreach (Game game1 in list)
-                Console.WriteLine(game1.ToString());
 
             return list;
         }
@@ -84,7 +86,7 @@ namespace ServiceModel
             game.HOMESCORE = game.AWAYSCORE = -1;
             return game;
         }
-        public static GameList ReadGameSchedule()
+        public static GameList ReadGameSchedule(int days)
         {
             GroupDB groupDB = new GroupDB();
             GroupList groups = groupDB.SelectAll();
@@ -103,8 +105,7 @@ namespace ServiceModel
                 var sortedEvents = calendar.Events.OrderBy(e => e.Start);
                 // Get the current time
                 DateTime currentLocalTime = DateTime.UtcNow;
-                //DateTime nextMonth = currentLocalTime.AddMonths(1);
-                DateTime nextTwoWeeks = currentLocalTime.AddDays(14);
+                DateTime nextTwoWeeks = currentLocalTime.AddDays(days);
                 foreach (var calendarEvent in sortedEvents)
                 {
                     if (currentLocalTime < calendarEvent.Start.AsSystemLocal && nextTwoWeeks > calendarEvent.Start.AsSystemLocal)
@@ -206,7 +207,6 @@ namespace ServiceModel
         {
             Dictionary<string, List<string>> GroupInfo = GenerateGroupsNews();
             Dictionary<string, List<string>> dict = new Dictionary<string, List<string>>();
-            GameList list = new GameList();
             GroupDB groupDB = new GroupDB();
             GroupList groups = groupDB.SelectAll();
             foreach (string group in GroupInfo.Keys)

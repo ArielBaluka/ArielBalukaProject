@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel.Security.Tokens;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using ViewModel;
 
@@ -26,27 +27,7 @@ namespace ServiceModel
             {
                 info += content + "\n";
             }
-
-            int count = 0;
-            string toAdd = "";
-            string result = "";
-            foreach(string st in info.Split('\n'))
-            {
-                foreach(string s in st.Split(' '))
-                {
-                    toAdd = s + " ";
-                    if (count == 15)
-                    {
-                        toAdd += "\n";
-                        count = 0;
-                    }
-                    count++;
-                    result += toAdd;
-                }
-                if (result[result.Length-1] != '\n')
-                    result += "\n";
-            }
-            return result;
+            return info;
         }
 
         public GameList GetAllGames()
@@ -206,15 +187,15 @@ namespace ServiceModel
             return list;
         }
 
-        public GameList GetNextmonthGames()
+        public GameList GetNextmonthGames(int days)
         {
-            GameList list = PremierLeagueData.ReadGameSchedule();
+            GameList list = PremierLeagueData.ReadGameSchedule(days);
             return list;
         }
 
-        public void InsertNewGames()
+        public void InsertNewGames(int days)
         {
-            GameList list = GetNextmonthGames();
+            GameList list = GetNextmonthGames(days);
             GameDB db = new GameDB();
             foreach(Game game in list)
             {
@@ -229,6 +210,8 @@ namespace ServiceModel
         {
             GameList list = GetGameResults();
             GameDB db = new GameDB();
+            GroupDB Gdb = new GroupDB();
+            GroupList groups = Gdb.SelectAll();
 
             GameList games =new GameList(db.SelectAll().FindAll(g=>g.AWAYSCORE==-1));
             foreach (Game game in games)
@@ -239,8 +222,56 @@ namespace ServiceModel
                     game.AWAYSCORE = current.AWAYSCORE;
                     game.HOMESCORE = current.HOMESCORE;
                     db.Update(game);
+                    AddGroupPoints(game, groups);
+                    Gdb.Update(game.HOMETEAM);
+                    Gdb.Update(game.AWAYTEAM);
+                }
+                else if(game.Date < DateTime.Today)// no result and game score not found
+                {
+                    //remove the game
+                    db.Delete(game);
                 }
             }
+            if (games[0].HOMETEAM.Points == 0)
+            {
+                UpdateGroupsFirstTime();
+            }
+
+        }
+
+        public void UpdateGroupsFirstTime()
+        {
+            GameDB db = new GameDB();
+            GroupDB Gdb = new GroupDB();
+            GroupList groups = Gdb.SelectAll();
+            GameList gameLst = new GameList(db.SelectAll().FindAll(g => g.AWAYSCORE != -1));
+            foreach (Game g in gameLst)
+            {
+                AddGroupPoints(g, groups);
+            }
+            foreach (Group g in groups)
+            {
+                Gdb.Update(g);
+            }
+        }
+
+        public void AddGroupPoints(Game game, GroupList groups)
+        {
+            if(game.HOMESCORE > game.AWAYSCORE)
+            {
+                game.HOMETEAM.Points += 3;
+            }
+            else if (game.AWAYSCORE > game.HOMESCORE)
+            {
+                game.AWAYTEAM.Points += 3;
+            }
+            else
+            {
+                game.AWAYTEAM.Points += 1;
+                game.HOMETEAM.Points += 1;
+            }
+            groups[game.HOMETEAM.ID-1].Points += game.HOMETEAM.Points;
+            groups[game.AWAYTEAM.ID-1].Points += game.AWAYTEAM.Points;
         }
 
         public int CalculateUserPoint(User user)
@@ -278,11 +309,9 @@ namespace ServiceModel
             GuessList guesses = GetAllGuesses();
             GameList games = GetAllGames();
             Game game = null;
-            // the first id of a game in my gameDB is 3
             foreach (Guess guess in guesses)
             {
-                game = games[guess.GAME.ID - 3];
-
+                game = games.FindAll(x => x.ID == guess.GAME.ID)[0];
                 if (CheckGuess(guess, game))
                 {
                     guess.ISCORRECT = true;
@@ -291,5 +320,21 @@ namespace ServiceModel
             }
         }
 
+        public bool DoesPlayerExist(Player p)
+        {
+            PlayerDB db = new PlayerDB();
+            if(db.IsExist(p))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public GroupList GetAllGroupsByPoints()
+        {
+            GroupDB db = new GroupDB();
+            GroupList list = db.SelectAllByPoints();
+            return list;
+        }
     }
 }

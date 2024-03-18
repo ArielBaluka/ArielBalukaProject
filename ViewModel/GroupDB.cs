@@ -17,10 +17,10 @@ namespace ViewModel
         {
             Group group = entity as Group;
             command.Parameters.Clear();
-            command.Parameters.AddWithValue("@id", group.ID);
             command.Parameters.AddWithValue("@GroupName", group.GroupName);
             command.Parameters.AddWithValue("@Points", group.Points);
             command.Parameters.AddWithValue("@GroupShortcut", group.GroupShortcut);
+            command.Parameters.AddWithValue("@id", group.ID);
         }
         protected override BaseEntity CreateModel(BaseEntity entity)
         {
@@ -36,6 +36,14 @@ namespace ViewModel
         public GroupList SelectAll()
         {
             command.CommandText = "SELECT * FROM tblGroup";
+            GroupList groups = new GroupList(ExecuteCommand());
+            return groups;
+        }
+
+        //שאילתה המחזירה את כלל הקבוצות
+        public GroupList SelectAllByPoints()
+        {
+            command.CommandText = "SELECT * FROM tblGroup ORDER BY Points DESC";
             GroupList groups = new GroupList(ExecuteCommand());
             return groups;
         }

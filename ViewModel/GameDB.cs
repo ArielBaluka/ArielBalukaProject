@@ -47,7 +47,7 @@ namespace ViewModel
         //שאילתה המחזירה את כלל המשחקים
         public GameList SelectAll()
         {
-            command.CommandText = "SELECT * FROM tblGames";
+            command.CommandText = "SELECT * FROM tblGames ORDER BY GameID";
             GameList games = new GameList(ExecuteCommand());
             return games;
         }
@@ -82,7 +82,7 @@ namespace ViewModel
         }
         public int Delete(Game game)
         {
-            command.CommandText = "DELETE FROM TblUser WHERE ID = @id";
+            command.CommandText = $"DELETE FROM tblGames WHERE GameID ={game.ID}";
             LoadParameters(game);
             return ExecuteCRUD();
         }

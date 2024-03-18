@@ -33,12 +33,12 @@ namespace ViewModel
         {
             Player player = entity as Player;
             command.Parameters.Clear();
+            command.Parameters.AddWithValue("@PName", player.FirstName);
+            command.Parameters.AddWithValue("@PLastName", player.LastName);
+            command.Parameters.AddWithValue("@PNumber", player.Number);
+            command.Parameters.AddWithValue("@PGroup", player.PlayerGroup.ID);
+            command.Parameters.AddWithValue("@IsCaptain", player.IsCaptain);
             command.Parameters.AddWithValue("@PlayerID", player.ID);
-            command.Parameters.AddWithValue("@GameID", player.FirstName);
-            command.Parameters.AddWithValue("@TeamGuessed", player.LastName);
-            command.Parameters.AddWithValue("@IsDraw", player.Number);
-            command.Parameters.AddWithValue("@IsDraw", player.PlayerGroup.ID);
-            command.Parameters.AddWithValue("@IsDraw", player.IsCaptain);
         }
 
 
@@ -63,9 +63,9 @@ namespace ViewModel
 
         public int Insert(Player player)
         {
-            command.CommandText = "INSERT INTO TblPlayers " +
-                "(PName, PlastName, PNumber, Pgroup, IsCaptain)" +
-                "VALUES (@PName, @PlastName, @PNumber, @Pgroup, @IsCaptain)";
+            command.CommandText = "INSERT INTO tblPlayers " +
+                "(PName, PlastName, PNumber, PGroup, IsCaptain)" +
+                " VALUES (@PName, @PlastName, @PNumber, @PGroup, @IsCaptain)";
             LoadParameters(player);
             return ExecuteCRUD();
         }
@@ -83,5 +83,14 @@ namespace ViewModel
             LoadParameters(player);
             return ExecuteCRUD();
         }
+
+        public bool IsExist(Player player)
+        {
+            command.CommandText = $"SELECT * FROM tblPlayers WHERE PNumber = {player.Number} AND " +
+                $"PGroup = {player.PlayerGroup.ID}";
+            PlayerList players = new PlayerList(ExecuteCommand());
+            return players.Count() > 0;
+        }
+
     }
 }

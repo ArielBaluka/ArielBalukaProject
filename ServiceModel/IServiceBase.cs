@@ -16,6 +16,7 @@ namespace ServiceModel
         [OperationContract] UserList GetAllUsers();
         [OperationContract] GameList GetAllGames();
         [OperationContract] GroupList GetAllGroups();
+        [OperationContract] GroupList GetAllGroupsByPoints();
         [OperationContract] GuessList GetAllGuesses();
         [OperationContract] PlayerList GetAllPlayers();
         //insert
@@ -45,11 +46,11 @@ namespace ServiceModel
         //others
         [OperationContract] User Login(User user);
         [OperationContract] GameList GetGameResults();
-        [OperationContract] void InsertNewGames();
+        [OperationContract] void InsertNewGames(int days);
         [OperationContract] void LoadResults();
         [OperationContract] int CalculateUserPoint(User user);
 
         [OperationContract] string GetGroupData(Group group);
-
+        [OperationContract] bool DoesPlayerExist(Player p);
     }
 }
