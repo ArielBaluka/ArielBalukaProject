@@ -80,6 +80,18 @@ namespace ViewModel
             return ExecuteCRUD();
         }
 
+        public int DeleteByGame(Game game)
+        {
+            command.CommandText = $"DELETE FROM tblGuess WHERE GameID = {game.ID}";
+            return ExecuteCRUD();
+        }
+
+        public int DeleteByUser(User user)
+        {
+            command.CommandText = $"DELETE FROM tblGuess WHERE UserID = {user.ID}";
+            return ExecuteCRUD();
+        }
+
         public GuessList GetUserGuesses(User user)
         {
             command.CommandText = $"SELECT * FROM tblGuess WHERE UserID = {user.ID}";

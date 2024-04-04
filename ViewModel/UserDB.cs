@@ -85,15 +85,15 @@ namespace ViewModel
         }
         public int Update(User user)
         {
-            command.CommandText = "UPDATE TblUser SET username = @username firstname = @firstname, lastname = @lastname, " +
-                "userName = @userName, Password = @Password, gender = @gender, birthDate = @birthDate, Email = @Email, " +
-                "isAdmin = @isAdmin, FavoriteGroup = @FavoriteGroup WHERE id = @id";
+            command.CommandText = "UPDATE TblUser SET firstname = @firstname, lastname = @lastname, " +
+                "userName = @userName, [Password] = @Password, gender = @gender, birthDate = @birthDate, Email = @Email, " +
+                "isAdmin = @isAdmin, FavoriteGroupID = @FavoriteGroupID WHERE id = @id";
             LoadParameters(user);
             return ExecuteCRUD();
         }
         public int Delete(User user)
         {
-            command.CommandText = "DELETE FROM TblUser WHERE ID =@id";
+            command.CommandText = $"DELETE FROM TblUser WHERE id = {user.ID}";
             LoadParameters(user);
             return ExecuteCRUD();
         }

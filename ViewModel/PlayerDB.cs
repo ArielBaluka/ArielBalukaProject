@@ -1,5 +1,6 @@
 ﻿using Model;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -92,5 +93,18 @@ namespace ViewModel
             return players.Count() > 0;
         }
 
+        public PlayerList SelectByGroup(Group g)
+        {
+            command.CommandText = $"SELECT * FROM tblPlayers WHERE PGroup = {g.ID}";
+            PlayerList players = new PlayerList(ExecuteCommand());
+            return players;
+        }
+
+        public PlayerList SelectByUser(User u)
+        {
+            command.CommandText = $"SELECT * FROM (tblPlayers INNER JOIN tblGroup ON tblPlayers.PGroup = tblGroup.id) WHERE PGroup = {u.FAVORITEGROUP.ID}";
+            PlayerList players = new PlayerList(ExecuteCommand());
+            return players;
+        }
     }
 }

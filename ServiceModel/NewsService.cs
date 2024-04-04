@@ -23,21 +23,9 @@ namespace ServiceModel
             string info = "";
             foreach (string content in data)
             {
-                info += content + "\n";
+                info += content + "\n\n";
             }
             return info;
         }
-
-        //public static Dictionary<string, List<string>> AdjustDict()
-        //{
-        //    Dictionary<string, List<string>> GroupInfo = PremierLeagueData.GenerateGroupsNews();
-        //    Dictionary<string, List<string>> dict = new Dictionary<string, List<string>>();
-            
-        //    foreach (string group in GroupInfo.Keys)
-        //    {
-        //        dict[GetGroup(group, groups).GroupName] = GroupInfo[group];
-        //    }
-        //    return dict;
-        //}
     }
 }

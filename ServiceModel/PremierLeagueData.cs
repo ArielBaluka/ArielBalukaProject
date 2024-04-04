@@ -189,7 +189,7 @@ namespace ServiceModel
                                 break;
                             case "pubDate":
                                 string date = DateTime.Parse(reader.ReadString()).ToString("dd/MM/yy") + ": ";
-                                AddInfoGroup(date + desc, groupsInfo);
+                                AddInfoGroup(date + "  " +desc, groupsInfo);
                                 break;
                         }
                     }

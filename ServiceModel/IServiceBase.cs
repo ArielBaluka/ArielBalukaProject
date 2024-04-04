@@ -50,7 +50,10 @@ namespace ServiceModel
         [OperationContract] void LoadResults();
         [OperationContract] int CalculateUserPoint(User user);
 
-        [OperationContract] string GetGroupData(Group group);
+        //[OperationContract] string GetGroupData(Group group);
         [OperationContract] bool DoesPlayerExist(Player p);
+
+        [OperationContract] PlayerList GetPlayersByGroup(Group group);
+        [OperationContract] PlayerList GetPlayersByUser(User user);
     }
 }

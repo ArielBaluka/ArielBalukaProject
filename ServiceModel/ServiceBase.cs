@@ -19,16 +19,16 @@ namespace ServiceModel
             groupsInfo = PremierLeagueData.AdjustDict();
         }
 
-        public string GetGroupData(Group group)
-        {
-            List<string> data = groupsInfo[group.GroupName];
-            string info = "";
-            foreach(string content in data)
-            {
-                info += content + "\n";
-            }
-            return info;
-        }
+        //public string GetGroupData(Group group)
+        //{
+        //    List<string> data = groupsInfo[group.GroupName];
+        //    string info = "";
+        //    foreach(string content in data)
+        //    {
+        //        info += content + "\n";
+        //    }
+        //    return info;
+        //}
 
         public GameList GetAllGames()
         {
@@ -97,7 +97,7 @@ namespace ServiceModel
         {
             UserDB db = new UserDB();
             int res = db.Insert(user);
-            return res;
+            return GetAllUsers().Last().ID;
         }
         
 
@@ -138,7 +138,9 @@ namespace ServiceModel
 
 
         public int DeleteGame(Game game)
-        {
+        {// delete from guess
+            GuessDB guessDB = new GuessDB();
+            guessDB.DeleteByGame(game);
             GameDB db = new GameDB();
             int res = db.Delete(game);
             return res;
@@ -166,7 +168,9 @@ namespace ServiceModel
         }
 
         public int DeleteUser(User user)
-        {
+        {// delete from guesses
+            GuessDB guessDB = new GuessDB();
+            guessDB.DeleteByUser(user);
             UserDB db = new UserDB();
             int res = db.Delete(user);
             return res;
@@ -335,6 +339,20 @@ namespace ServiceModel
             GroupDB db = new GroupDB();
             GroupList list = db.SelectAllByPoints();
             return list;
+        }
+
+        public PlayerList GetPlayersByGroup(Group group)
+        {
+            PlayerDB playerDB = new PlayerDB();
+            PlayerList players = playerDB.SelectByGroup(group);
+            return players;
+        }
+
+        public PlayerList GetPlayersByUser(User user)
+        {
+            PlayerDB playerDB = new PlayerDB();
+            PlayerList players = playerDB.SelectByUser(user);
+            return players;
         }
     }
 }

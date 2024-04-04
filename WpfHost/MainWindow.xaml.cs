@@ -36,6 +36,7 @@ namespace WpfHost
             service.Open();
             service2.Open();
             
+            
         }
     }
 }
