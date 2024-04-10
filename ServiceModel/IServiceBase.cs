@@ -55,5 +55,6 @@ namespace ServiceModel
 
         [OperationContract] PlayerList GetPlayersByGroup(Group group);
         [OperationContract] PlayerList GetPlayersByUser(User user);
+        [OperationContract] GuessList GetGuessesByGame(Game game);
     }
 }

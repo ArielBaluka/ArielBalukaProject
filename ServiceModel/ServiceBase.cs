@@ -233,7 +233,8 @@ namespace ServiceModel
                 else if(game.Date < DateTime.Today)// no result and game score not found
                 {
                     //remove the game
-                    db.Delete(game);
+                    DeleteGame(game);
+                    //db.Delete(game);
                 }
             }
             if (games[0].HOMETEAM.Points == 0)
@@ -353,6 +354,13 @@ namespace ServiceModel
             PlayerDB playerDB = new PlayerDB();
             PlayerList players = playerDB.SelectByUser(user);
             return players;
+        }
+
+        public GuessList GetGuessesByGame(Game game)
+        {
+            GuessDB guessDB = new GuessDB();
+            GuessList guesses = guessDB.SelectByGame(game);
+            return guesses;
         }
     }
 }

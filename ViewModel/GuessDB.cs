@@ -58,6 +58,13 @@ namespace ViewModel
             return guesses;
         }
 
+        public GuessList SelectByGame(Game game)
+        {
+            command.CommandText = $"SELECT * FROM tblGuess WHERE GameID = {game.ID}";
+            GuessList guesses = new GuessList(ExecuteCommand());
+            return guesses;
+        }
+
         public int Insert(Guess guess)
         {
             command.CommandText = "INSERT INTO tblGuess " +
