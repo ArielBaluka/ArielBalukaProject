@@ -232,9 +232,20 @@ namespace ServiceModel
                 }
                 else if(game.Date < DateTime.Today)// no result and game score not found
                 {
-                    //remove the game
-                    DeleteGame(game);
-                    //db.Delete(game);
+                    GameList gm = new GameList(db.SelectAll().FindAll(g => g.Date > game.Date));//getting all the future games
+                    foreach(Game futureGmae in gm)
+                    {
+                        if (futureGmae.HOMETEAM == game.HOMETEAM && futureGmae.AWAYTEAM == game.AWAYTEAM)
+                        {//found the correct delayed game
+                            GuessList guesses = GetGuessesByGame(game);
+                            foreach (Guess guess in guesses)
+                            {
+                                guess.GAME = futureGmae;
+                                InsertGuess(guess);
+                            }
+                        }
+                    }
+                    DeleteGame(game);//remove the delayed game
                 }
             }
             if (games[0].HOMETEAM.Points == 0)
